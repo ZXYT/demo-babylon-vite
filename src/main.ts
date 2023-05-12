@@ -5,10 +5,6 @@ import "@babylonjs/loaders";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { WebGPUEngine } from "@babylonjs/core/Engines/webgpuEngine";
 import { getSceneModuleWithName } from "./createScene";
-import "@babylonjs/inspector";
-
-import { FluidRendering } from "./scenes/fluidSimulation2";
-const createSceneModule = new FluidRendering();
 
 import "@babylonjs/inspector";
 
@@ -25,7 +21,6 @@ export const babylonInit = async (): Promise<void> => {
   // get the module to load
   const moduleName = getModuleToLoad();
   const createSceneModule = await getSceneModuleWithName(moduleName);
-  console.log(createSceneModule);
   // Execute the pretasks, if defined
   await Promise.all(createSceneModule.preTasks || []);
   // Get the canvas element
@@ -34,7 +29,7 @@ export const babylonInit = async (): Promise<void> => {
   let engine: Engine;
   const webgpuSupported = await WebGPUEngine.IsSupportedAsync;
 
-  if (webgpuSupported) {
+  if (false) {
     engine = new WebGPUEngine(canvas, {
       deviceDescriptor: {
         requiredFeatures: [
