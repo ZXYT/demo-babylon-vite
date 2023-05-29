@@ -1,73 +1,39 @@
-import "./style.css";
-
-import "@babylonjs/loaders";
-
+import "./style.css"; // 引入样式文件
+import "@babylonjs/loaders"; // 引入 Babylon.js 加载器
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { WebGPUEngine } from "@babylonjs/core/Engines/webgpuEngine";
-import { getSceneModuleWithName } from "./createScene";
-
-import "@babylonjs/inspector";
-
+import { FluidRendering } from "./scenes/fluidSimulation2"; // 自定义场景
+import { Inspector } from "@babylonjs/inspector"; // 引入 Babylon.js Inspector
 let seed = 1;
+// 重写 Math.random 方法，保证每次得到的随机数列相同
 Math.random = function () {
   const x = Math.sin(seed++) * 10000;
   return x - Math.floor(x);
 };
-
-const getModuleToLoad = (): string | undefined =>
-  location.search.split("scene=")[1];
-
+// Babylon.js 场景初始化函数
 export const babylonInit = async (): Promise<void> => {
-  // get the module to load
-  const moduleName = getModuleToLoad();
-  const createSceneModule = await getSceneModuleWithName(moduleName);
-  // Execute the pretasks, if defined
-  await Promise.all(createSceneModule.preTasks || []);
-  // Get the canvas element
+  // 获取 canvas 元素
   const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-
   let engine: Engine;
   const webgpuSupported = await WebGPUEngine.IsSupportedAsync;
-
-  if (false) {
-    engine = new WebGPUEngine(canvas, {
-      deviceDescriptor: {
-        requiredFeatures: [
-          "depth-clip-control",
-          "depth24unorm-stencil8",
-          "depth32float-stencil8",
-          "texture-compression-bc",
-          "texture-compression-etc2",
-          "texture-compression-astc",
-          "timestamp-query",
-          "indirect-first-instance",
-        ],
-      },
-      stencil: false,
-    });
-    (engine as WebGPUEngine).dbgShowShaderCode = false;
+  if (webgpuSupported) {
+    engine = new WebGPUEngine(canvas);
     await (engine as WebGPUEngine).initAsync();
   } else {
     engine = new Engine(canvas, true);
   }
-
-  // Create the scene
-  const scene = await createSceneModule.createScene(engine, canvas);
-
-  (window as any).engine = engine;
-  (window as any).scene = scene;
-
-  // Register a render loop to repeatedly render the scene
+  const createSceneModule = new FluidRendering(); // 创建自定义场景实例
+  const scene = await createSceneModule.createScene(engine, canvas); // 创建场景
+  // Inspector.Show(scene, {}); // 显示 Inspector，调试工具
+  // 注册 render loop，循环渲染场景
   engine.runRenderLoop(function () {
     scene.render();
   });
-
-  // Watch for browser/canvas resize events
+  // 监听窗口/画布大小变化事件
   window.addEventListener("resize", function () {
     engine.resize();
   });
 };
-
 babylonInit().then(() => {
-  // scene started rendering, everything is initialized
+  // 场景开始渲染，一切初始化完成
 });
