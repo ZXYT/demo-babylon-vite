@@ -65,7 +65,17 @@ export class FluidSimulationDemoMeshSDF extends FluidSimulationDemoBase {
           "label.obj",
           "label.sdf",
           true,
-          1
+          2
+        );
+        break;
+      case "container":
+        this.addCollisionMesh(
+          new BABYLON.Vector3(0, 0, 0),
+          new BABYLON.Vector3(0, 0, 0),
+          "container.obj",
+          "container.sdf",
+          true,
+          20
         );
         break;
     }
@@ -154,7 +164,13 @@ export class FluidSimulationDemoMeshSDF extends FluidSimulationDemoBase {
     mainMenu.add(params, "restart").name("Restart");
 
     mainMenu
-      .add(params, "meshname", ["Dragon", "High heels", "sphere", "label"])
+      .add(params, "meshname", [
+        "Dragon",
+        "High heels",
+        "sphere",
+        "label",
+        "container",
+      ])
       .name("Name")
       .onChange((value: any) => {
         this.disposeCollisionObject(this._collisionObjects.length - 1);
