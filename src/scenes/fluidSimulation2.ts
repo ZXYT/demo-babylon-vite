@@ -86,7 +86,7 @@ export class FluidRendering implements CreateSceneClass {
       () => new FluidSimulationDemoMeshSDF(scene)
     );
 
-    FluidSimulationDemoBase.StartDemo(1);
+    FluidSimulationDemoBase.StartDemo(6);
 
     return scene;
   }
